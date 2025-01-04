@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>SVG Example with Life Counter</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* For PC (desktop) */
+        .sprite {
+            width: 50vw; /* 50% of the viewport width */
+            height: 50vh; /* 50% of the viewport height */
+            display: flex;
+            justify-content: flex-start; /* Align items to the left */
+            align-items: center; /* Vertically center items */
+            background-color: red; /* Optional: Set a background color for visualization */
+        }
+
+        .sprite svg {
+            max-width: 100%; /* SVG should not exceed the width of the container */
+            max-height: 100%; /* SVG should not exceed the height of the container */
+            width: auto; /* Maintain aspect ratio based on width */
+            height: auto; /* Maintain aspect ratio based on height */
+            /* Ensures the SVG fits within the container, maintaining aspect ratio */
+        }
+
+        @media (max-width: 768px) {
+            .sprite {
+                width: 90vw; /* 70% of the viewport width on mobile */
+                height: 50vh; /* Auto height to maintain aspect ratio */
+            }
+
+            #wrapper {
+                display: flex;
+                flex-direction: column;
+                height: auto;
+                width: 100%;
+                align-items: center; /* Center the wrapper content on smaller screens */
+            }
+        }
+
+        #pokemonSVG {
+            display: none;
+        }
+
+        body {
+            width: 100vw;
+            height: 100vh;
+            background: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #wrapper {
+            text-align: center;
+        }
+
+        h1 {
+            color: white;
+        }
+
+        input, button {
+            width: 100%;
+            margin: 10px 0;
+            padding: 10px;
+            font-size: 1rem;
+        }
+
+        .lives {
+            margin: 10px 0;
+        }
+
+        .lives span {
+            font-size: 2rem;
+            color: red;
+            margin: 0 5px;
+        }
+
+        #lossMessage {
+            color: white;
+            font-size: 1.5rem;
+            margin-top: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div id="wrapper">
+    <h1>Whose that Pokémon?</h1>
+
+    <!-- Life Counter -->
+    <div class="lives" id="lifeCounter">
+        <span>❤️</span>
+        <span>❤️</span>
+        <span>❤️</span>
+        <span>❤️</span>
+        <span>❤️</span>
+    </div>
+
+    <!-- Incorrect SVG -->
+    <div id="incorrectSVG" class="sprite" th:utext="${svgContent}"></div>
+
+    <!-- Correct SVG -->
+    <div id="pokemonSVG" class="sprite" th:utext="${answerIMG}"></div>
+
+    <!-- Input and Submit -->
+    <input type="text" id="userInput" placeholder="Enter Pokémon name">
+    <button onclick="checkPokemon()">Submit</button>
+
+    <!-- Loss Message -->
+    <div id="lossMessage">You Lose! Here's the correct Pokémon:</div>
+</div>
+
+<script th:inline="javascript">
+    // This variable is populated from the Spring controller's model attribute
+    const correctPokemonName = /*[[${name}]]*/ ""; // Example: "Pikachu"
+
+    let lives = 5;
+
+    function checkPokemon() {
+        // Get user input
+        const userInput = document.getElementById('userInput').value.trim();
+
+        // Compare user input with the correct Pokémon name
+        if (userInput.toLowerCase() === correctPokemonName.toLowerCase()) {
+            // If correct, hide the incorrect SVG and show the correct one
+            document.getElementById('pokemonSVG').style.display = 'block';
+            document.getElementById('incorrectSVG').style.display = 'none';
+            alert("You got it right!");
+        } else {
+            // Reduce lives and update life counter
+            lives--;
+            updateLives();
+
+            // If lives are 0, show the loss message and reveal the correct Pokémon
+            if (lives === 0) {
+                document.getElementById('lossMessage').style.display = 'block';
+                document.getElementById('pokemonSVG').style.display = 'block';
+                document.getElementById('incorrectSVG').style.display = 'none';
+                
+                setTimeout(() => {
+                    const playAgain = confirm("You Lose! Play again?");
+                    if (playAgain) {
+                        // Reload the page to restart the game
+                        location.reload();
+                    }
+                }, 500);
+
+                return;
+            }
+
+            // If incorrect but lives remain, show incorrect SVG
+            document.getElementById('pokemonSVG').style.display = 'none';
+            document.getElementById('incorrectSVG').style.display = 'block';
+        }
+    }
+
+    function updateLives() {
+        const lifeCounter = document.getElementById('lifeCounter');
+        lifeCounter.innerHTML = '';
+        for (let i = 0; i < lives; i++) {
+            lifeCounter.innerHTML += '<span>❤️</span>';
+        }
+    }
+</script>
+</body>
+</html>

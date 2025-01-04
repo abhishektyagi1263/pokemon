@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Pokemon Image</title>
+</head>
+<body>
+    <h1>Pokemon Image</h1>
+    <img th:src="'data:image/png;base64,' + ${imageData}" alt="Pokemon Image">
+</body>
+</html>
