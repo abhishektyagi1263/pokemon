@@ -23,6 +23,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: '17'
+          distribution: 'zulu'
 
       # Step 3: Build the Spring Boot application
       - name: Build with Maven
