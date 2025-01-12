@@ -4,9 +4,8 @@ metadata:
   name: pokemon
 spec:
   type: LoadBalancer
-  selector:
-    app: pokemon-app
   ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 8080
+    - port: 80           # Exposes port 80 externally
+      targetPort: 8080    # Forwards traffic to container port 8080
+  selector:
+    app: springboot
